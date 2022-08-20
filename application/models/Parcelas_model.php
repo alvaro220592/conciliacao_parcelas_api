@@ -9,16 +9,16 @@ class Parcelas_model extends CI_Model {
     }
 
     public function all(){
-        $data = $this->db->get('parcelas');
-        return $data->result();
+        $model = $this->db->get('parcelas');
+        return $model->result();
     }
 
     public function show($id){
-        $data = $this->db->where('id', $id)->get('parcelas');
-        if(count($data->result()) == 0){
+        $model = $this->db->where('id', $id)->get('parcelas');
+        if(!$model->result()){
             return 'Não encontrado';
         }
-        return $data->result()[0];
+        return $model->result()[0];
     }
 
     public function store(){
@@ -29,21 +29,30 @@ class Parcelas_model extends CI_Model {
         $this->db->insert('parcelas', $campos);
     }
 
-    public function update($id){        
+    public function update($id){
+        $model = $this->db->where('id', $id);
+
+        if(!$model->get('parcelas')->result()){
+            return 'Não encontrado';
+        }
+
         $data = json_decode(trim(file_get_contents('php://input')), true);
         $campos = [
             'flg_pago' => $data['flg_pago']
         ];
-        $this->db->where('id', $id)->update('parcelas', $campos);
+        $model->update('parcelas', $campos);
+        return "Parcela nº {$model->get('parcelas')->result()[0]->id} alterada com sucesso.";
     }
 
     public function destroy($id){
-        $parcela = $this->db->where('id', $id)->get('parcelas');
-        if(count($parcela->result()) == 0){
-            return false;
-        }else{            
-            $this->db->delete('parcelas', ['id' => $id]);
-            return true;
+        $model = $this->db->where('id', $id);
+        
+        if(!$model->get('parcelas')->result()){
+            return 'Não encontrado';
         }
+        $num_parcela = $model->get('parcelas')->result()[0]->id;
+        
+        $model->delete('parcelas', ['id' => $id]);
+        return "Parcela nº {$num_parcela} excluída com sucesso.";
     }
 }

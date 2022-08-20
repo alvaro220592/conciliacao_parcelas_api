@@ -24,20 +24,14 @@ class Parcela extends REST_Controller {
         if(!$this->parcelas->store()){
             $this->response('Erro ao cadastrar parcela');
         }
-        $this->response('Parcela cadastrada com sucesso');
+        $this->response('Parcela cadastrada com sucesso', 200);
     }
 
     public function index_put($id){
-        if(!$this->parcelas->update($id)){
-            $this->response('Erro ao alterar parcela');
-        }
-        $this->response('Parcela alterada com sucesso');
+        $this->response($this->parcelas->update($id));
     }
 
     public function index_delete($id){
-        if(!$this->parcelas->destroy($id)){
-            return $this->response('Erro ao excluir parcela');
-        }
-        return $this->response('Parcela excluída com sucesso');
+        $this->response($this->parcelas->destroy($id));
     }
 }
