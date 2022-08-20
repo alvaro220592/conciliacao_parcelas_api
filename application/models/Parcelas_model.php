@@ -9,8 +9,7 @@ class Parcelas_model extends CI_Model {
     }
 
     public function all(){
-        $model = $this->db->get('parcelas');
-        return $model->result();
+        return $this->db->get('parcelas')->result();
     }
 
     public function show($id){
@@ -26,7 +25,7 @@ class Parcelas_model extends CI_Model {
         $campos = [
             'flg_pago' => $data['flg_pago']
         ];
-        $this->db->insert('parcelas', $campos);
+        return $this->db->insert('parcelas', $campos) ? true : false;
     }
 
     public function update($id){

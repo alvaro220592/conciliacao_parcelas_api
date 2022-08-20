@@ -7,24 +7,24 @@ class Parcela extends REST_Controller {
         header('Access-Control-Allow-Origin: *');
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
         parent::__construct();
-        $this->load->database();
         $this->load->model('Parcelas_model', 'parcelas');
     }
 
     public function index_get($id = ''){
         if(!$id){
-            $data['parcelas'] = $this->parcelas->all();
+            $model['parcelas'] = $this->parcelas->all();
         }else{
-            $data['parcela'] = $this->parcelas->show($id);
+            $model['parcela'] = $this->parcelas->show($id);
         }
-        $this->response($data, 200);
+        $this->response($model, 200);
     }
 
     public function index_post(){
         if(!$this->parcelas->store()){
             $this->response('Erro ao cadastrar parcela');
+        }else{
+            $this->response('Parcela cadastrada com sucesso', 200);
         }
-        $this->response('Parcela cadastrada com sucesso', 200);
     }
 
     public function index_put($id){
