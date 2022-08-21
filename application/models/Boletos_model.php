@@ -1,56 +1,42 @@
 <?php
 
 defined('BASEPATH') OR exit('No direct script access allowed');
+include APPPATH . '/libraries/CrudTrait.php';
 
 class Boletos_model extends CI_Model {
 
+    use CrudTrait;
+    
+    private $tabela = 'boletos';
+    private $camposCrud;
+    private $data;
+    
     public function __construct(){
         $this->load->database();
+        $this->data = json_decode(trim(file_get_contents('php://input')), true);
+        $this->camposCrud = $this->data ? ['nosso_numero' => $this->data['nosso_numero'],'parcela_id' => $this->data['parcela_id']] : '';
     }
 
     public function all(){
-        return $this->db->get('boletos')->result();
+        return $this->traitAll($this->tabela);
     }
 
     public function show($id){
-        $model = $this->db->where('id', $id)->get('boletos');
-        if(!$model->result()){
-            return 'Não encontrado';
-        }
-        return $model->result()[0];        
+        return $this->traitShow($id, $this->tabela);
     }
 
     public function store(){
-        $data = json_decode(trim(file_get_contents('php://input')), true);
-        $campos = [
-            'nosso_numero' => $data['nosso_numero'],
-            'parcela_id' => $data['parcela_id'],
-        ];
-        return $this->db->insert('boletos', $campos) ? true : false;        
+        return $this->traitStore($this->camposCrud, $this->tabela) ?
+        json_encode('Cadastrado com sucesso', 200) : json_encode('Erro ao cadastrar', 500);
     }
 
     public function update($id){
-        $model = $this->db->where('id', $id);
-
-        if(!$model->get('boletos')->result()){
-            return 'Não encontrado';
-        }
-
-        $dados = json_decode(trim(file_get_contents('php://input')), true);
-
-        $campos = [
-            'nosso_numero' => $dados['nosso_numero'],
-            'parcela_id' => $dados['parcela_id']
-        ];
-        return $this->db->update('boletos', $campos) ? true : false;
+        echo $this->traitUpdate($id, $this->tabela, $this->camposCrud) ?
+        json_encode('Alterado com sucesso', 200) : json_encode('Erro ao alterar', 500);
     }
 
     public function destroy($id){
-        $model = $this->db->where('id', $id);
-
-        if(!$model->get('boletos')->result()){
-            return 'Não encontrado';
-        }
-        return $model->delete('boletos', ['id' => $id]) ? true : false;
+        echo $this->traitDestroy($id, $this->tabela) ?
+        json_encode('Excluído com sucesso', 200) : json_encode('Erro ao excluir', 500);
     }
 }

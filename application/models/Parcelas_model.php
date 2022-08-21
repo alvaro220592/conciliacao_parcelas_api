@@ -1,57 +1,42 @@
 <?php
 
 defined('BASEPATH') OR exit('No direct script access allowed');
+include APPPATH . '/libraries/CrudTrait.php';
 
 class Parcelas_model extends CI_Model {
 
+    use CrudTrait;
+    
+    private $tabela = 'parcelas';
+    private $camposCrud;
+    private $data;
+    
     public function __construct(){
         $this->load->database();
+        $this->data = json_decode(trim(file_get_contents('php://input')), true);
+        $this->camposCrud = $this->data ? ['flg_pago' => $this->data['flg_pago']] : '';
     }
 
     public function all(){
-        return $this->db->get('parcelas')->result();
+        return $this->traitAll($this->tabela);
     }
 
     public function show($id){
-        $model = $this->db->where('id', $id)->get('parcelas');
-        if(!$model->result()){
-            return 'Não encontrado';
-        }
-        return $model->result()[0];
+        return $this->traitShow($id, $this->tabela);
     }
 
     public function store(){
-        $data = json_decode(trim(file_get_contents('php://input')), true);
-        $campos = [
-            'flg_pago' => $data['flg_pago']
-        ];
-        return $this->db->insert('parcelas', $campos) ? true : false;
+        return $this->traitStore($this->camposCrud, $this->tabela) ?
+        json_encode('Cadastrado com sucesso', 200) : json_encode('Erro ao cadastrar', 500);
     }
 
     public function update($id){
-        $model = $this->db->where('id', $id);
-
-        if(!$model->get('parcelas')->result()){
-            return 'Não encontrado';
-        }
-
-        $data = json_decode(trim(file_get_contents('php://input')), true);
-        $campos = [
-            'flg_pago' => $data['flg_pago']
-        ];
-        $model->update('parcelas', $campos);
-        return "Parcela nº {$model->get('parcelas')->result()[0]->id} alterada com sucesso.";
+        echo $this->traitUpdate($id, $this->tabela, $this->camposCrud) ?
+        json_encode('Alterado com sucesso', 200) : json_encode('Erro ao alterar', 500);
     }
 
     public function destroy($id){
-        $model = $this->db->where('id', $id);
-        
-        if(!$model->get('parcelas')->result()){
-            return 'Não encontrado';
-        }
-        $num_parcela = $model->get('parcelas')->result()[0]->id;
-        
-        $model->delete('parcelas', ['id' => $id]);
-        return "Parcela nº {$num_parcela} excluída com sucesso.";
+        echo $this->traitDestroy($id, $this->tabela) ?
+        json_encode('Excluído com sucesso', 200) : json_encode('Erro ao excluir', 500);
     }
 }

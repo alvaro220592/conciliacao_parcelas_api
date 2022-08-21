@@ -28,14 +28,10 @@ class Boleto extends REST_Controller {
     }
 
     public function index_put($id){
-        $this->boletos->update($id) ? 
-        $this->response('Editado com sucesso') :
-        $this->response('Erro ao editar boleto');
+        $this->response($this->boletos->update($id));
     }
 
     public function index_delete($id){
-        $this->boletos->destroy($id) ?
-        $this->response('Excluído com sucesso') :
-        $this->response('Erro ao excluir boleto');        
+        $this->response($this->boletos->destroy($id));
     }
 }
