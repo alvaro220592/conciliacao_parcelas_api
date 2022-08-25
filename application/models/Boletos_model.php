@@ -14,7 +14,7 @@ class Boletos_model extends CI_Model {
     public function __construct(){
         $this->load->database();
         $this->data = json_decode(trim(file_get_contents('php://input')), true);
-        $this->camposCrud = $this->data ? ['nosso_numero' => $this->data['nosso_numero'],'parcela_id' => $this->data['parcela_id']] : '';
+        $this->camposCrud = $this->data && count($this->data) > 1 ? ['nosso_numero' => $this->data['nosso_numero'],'parcela_id' => $this->data['parcela_id']] : '';
     }
 
     public function all(){

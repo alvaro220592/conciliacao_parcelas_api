@@ -325,7 +325,7 @@ abstract class REST_Controller extends \CI_Controller {
      *
      * @var bool
      */
-    protected $check_cors = TRUE;
+    protected $check_cors = NULL;
 
     /**
      * Enable XSS flag
